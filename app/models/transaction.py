@@ -1,7 +1,5 @@
 from typing import Optional
-from unicodedata import name
-
-from sqlmodel import Field, Session, SQLModel, create_engine, select
+from sqlmodel import Field, SQLModel
 
 
 # Create a Transaction class that inherits from SQLModel
@@ -9,7 +7,7 @@ class Transaction(SQLModel, table=True):
     # Create the fields
     id: int = Field(int, primary_key=True, auto_increment=True)
     name: str = Field(str, nullable=True)
-    invest_id: int = Field(int, nullable=False)
+    person_id: int = Field(int, nullable=False)
     amount: float = Field(float, nullable=False)
     category: str = Field(str, nullable=False)
     date: str = Field(str, nullable=False)
@@ -59,11 +57,11 @@ class Transaction(SQLModel, table=True):
 
     #  Create a class method to get a transaction by invest ID
     @classmethod
-    def get_transaction_by_invest_id(cls, session: Session, invest_id: int) -> Optional[list]:
+    def get_transaction_by_invest_id(cls, session: Session, person_id: int) -> Optional[list]:
         """
-        Get a transaction by invest ID from the database.
+        Get a transaction by person ID from the database.
         :param session: The current database session.
-        :param invest_id: The invest ID of the transaction.
+        :param person_id: The person ID of the transaction.
         :return: A list of transactions or None if no transactions are found.
         """
         return cls.select(session, where=f"invest_id = {invest_id}")
