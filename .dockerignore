@@ -9,3 +9,6 @@
 .env
 private.key
 settings.json
+
+# ignore .db files
+*.db

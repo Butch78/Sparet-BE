@@ -2,8 +2,6 @@ from typing import Any, List
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from app import models, deps
-from sqlalchemy.future import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import Session
 
 from app.models import User, UserRead, UserCreate

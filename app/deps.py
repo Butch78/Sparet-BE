@@ -1,10 +1,6 @@
 from typing import Generator
 
 from sqlmodel import SQLModel, Session, create_engine
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
-
-
 
 
 sqlite_file_name = "database.db"
