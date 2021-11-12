@@ -1,7 +1,6 @@
 from typing import Optional, List
 from sqlmodel import Field, SQLModel, Relationship  
 
-from app import models
 
 # Create a new Person class that inherits from SQLModel
 class UserBase(SQLModel):
@@ -13,7 +12,7 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    transactions: List["User"] = Relationship(back_populates="user")
+    transactions: List["Transaction"] = Relationship(back_populates="user")
 
 
 class UserRead(UserBase):
