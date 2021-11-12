@@ -1,0 +1,11 @@
+# ignore .git and .cache folders
+.git
+.cache
+
+# ignore all mardown files
+*.md
+
+# ignore all sensitive files
+.env
+private.key
+settings.json

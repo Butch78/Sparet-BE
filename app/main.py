@@ -2,9 +2,16 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-from app.database.db import init_db
+from app.deps import create_db_and_tables
+from app.api.api_v1.api import api_router
 
+app.include_router(api_router)
 
 @app.on_event("startup")
 async def on_startup():
-    await init_db()
+    create_db_and_tables()
+
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    pass

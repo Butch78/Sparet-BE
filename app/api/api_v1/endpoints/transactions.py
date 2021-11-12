@@ -1,28 +1,30 @@
+from typing import Any, List
 
-from fastapi import APIRouter, Depends, HTTPException
-from typing import List
-
-# from ..dependencies import get_token_header
-
-router = APIRouter(
-    prefix="/items",
-    tags=["items"],
-    # TODO: Add dependencies
-    # dependencies=[Depends(get_token_header)],
-    responses={404: {"description": "Not found"}},
-)
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from app import models, deps
+from sqlmodel import Session
+from app.models.transaction import Transaction, TransactionCreate, TransactionRead
 
 
-from app.models import Transaction
+
+router = APIRouter()
 
 
-# Create Fastapi Transactions endpoints
-@router.get("/", response_model=List[Transaction])
-async def get_transactions(db_session):
-    return db_session.query(Transaction).all()
+#  Post Transaction
+@router.post("", response_model=TransactionRead)
+def create_transaction(*, session: Session = Depends(deps.get_session), transaction: TransactionCreate)->TransactionRead:
+    db_transaction = Transaction.from_orm(transaction)
+    session.add(db_transaction)
+    session.commit()
+    session.refresh(db_transaction)
+    return db_transaction
 
 
-# Create Fastapi Transaction by id endpoints
-@router.get("/{transaction_id}", response_model=Transaction)
-async def get_transaction(db_session, transaction_id):
-    return db_session.query(Transaction).filter(Transaction.id == transaction_id).first()
+@router.get("", response_model=List[TransactionRead])
+def read_transactions(
+    *,
+    session: Session = Depends(deps.get_session),
+    offset: int = 0,
+    limit: int = Query(default=100, lte=100),)->List[TransactionRead]:
+    transactions = session.query(Transaction).all()
+    return [Transaction.to_orm(transaction) for transaction in transactions]

@@ -1,11 +1,12 @@
 from typing import Optional
 from sqlmodel import Field, SQLModel
+from datetime import datetime
 
 
 class Investment(SQLModel, table=True):
-    id = Field(int, primary_key=True, auto_increment=True)
-    name = Field(str, max_length=100, nullable=False)
-    description = Field(str, max_length=500, nullable=False)
-    amount = Field(int, nullable=False)
-    date = Field(str, nullable=False)
-    user_id = Field(int, nullable=False)
+    id: int = Field(int, primary_key=True)
+    name: str
+    description: str = Optional[str]
+    amount: float
+    date: datetime
+    person_id: Optional[int] = Field(default=None, foreign_key="person.id")
