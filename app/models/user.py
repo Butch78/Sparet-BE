@@ -4,9 +4,14 @@ from sqlmodel import Field, SQLModel, Relationship
 
 # Create a new Person class that inherits from SQLModel
 class UserBase(SQLModel):
-    name: str
-    age: str
-    email: str
+    name: str = Field(..., title="Name", description="The name of the user")
+    age: int = Field(..., title="Age", description="The age of the user")
+    email: str = Field(..., title="Email", description="The email of the user")
+
+
+    class Config:
+        anystr_strip_whitespace = True
+
 
 # Inherit from UserBase
 class User(UserBase, table=True):
