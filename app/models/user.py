@@ -1,6 +1,19 @@
 from typing import Optional, List
 from sqlmodel import Field, SQLModel, Relationship  
+from authx.models import user
 
+
+class register(user.UserInRegister):
+    pass
+
+class Create(user.UserInCreate):
+    pass
+
+class login(user.UserInLogin):
+    pass
+
+class private(user.UserPrivateInfo):
+    pass
 
 # Create a new Person class that inherits from SQLModel
 class UserBase(SQLModel):
