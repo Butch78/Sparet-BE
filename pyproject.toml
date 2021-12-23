@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "Cookie"
+name = "Sparet"
 version = "0.1.0"
 description = "A round-up application for Transactions that invests in Green Companies"
 authors = ["Matthew Aylward <aylwardmatthew@outlook.com>"]
