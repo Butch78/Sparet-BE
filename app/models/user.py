@@ -21,7 +21,6 @@ class UserBase(SQLModel):
     age: int = Field(..., title="Age", description="The age of the user")
     email: str = Field(..., title="Email", description="The email of the user")
 
-
     class Config:
         anystr_strip_whitespace = True
 
