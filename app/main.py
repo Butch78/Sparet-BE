@@ -1,11 +1,12 @@
 from fastapi import FastAPI
-
-app = FastAPI()
-
 from app.deps import create_db_and_tables
 from app.api.api_v1.api import api_router
 
+app = FastAPI()
+
+
 app.include_router(api_router)
+
 
 @app.on_event("startup")
 async def on_startup():
