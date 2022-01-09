@@ -21,9 +21,6 @@ def get_session():
         yield session
 
 
-#  Create Client
-
-
 async def get_plaid_client() -> PlaidClient:
     try:
         client = PlaidClient()

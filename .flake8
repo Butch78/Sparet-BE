@@ -1,0 +1,12 @@
+[flake8]
+max-line-length = 88
+select = C,E,F,W,B,B9
+ignore = E203, E501, W503, F821, B008
+; F821 = SQL model List Relationship error
+exclude = __init__.py,
+    .git,
+    __pycache__,
+    *.egg-info,
+    .nox,
+    .pytest_cache,
+    .mypy_cache
