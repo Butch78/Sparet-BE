@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.deps import create_db_and_tables
+from app.utils.deps import create_db_and_tables
 from app.api.api_v1.api import api_router
 
 app = FastAPI()
