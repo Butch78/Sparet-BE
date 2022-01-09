@@ -1,2 +1,2 @@
-from .user import User, UserRead, UserCreate
+from .user import User
 from .transaction import Transaction, TransactionRead, TransactionCreate

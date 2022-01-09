@@ -1,6 +1,9 @@
-from typing import Optional, List
+from typing import List, TYPE_CHECKING
 from sqlmodel import Field, SQLModel, Relationship
 
+# TO enire there are not circular dependencies we use TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.models.transaction import Transaction
 
 # Create a new Person class that inherits from SQLModel
 class UserBase(SQLModel):
@@ -14,14 +17,14 @@ class UserBase(SQLModel):
 
 # Inherit from UserBase
 class User(UserBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
 
     transactions: List["Transaction"] = Relationship(back_populates="user")
 
 
-class UserRead(UserBase):
-    id: int
-
-
 class UserCreate(UserBase):
+    pass
+
+
+class UserRead(UserBase):
     pass
