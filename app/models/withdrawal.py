@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 from sqlmodel import Field, SQLModel
 from datetime import datetime
 
@@ -14,5 +13,4 @@ class Withdrawal(SQLModel, table=True):
     description: str
     created_at: datetime
     updated_at: datetime
-    person_id: Optional[int] = Field(default=None, foreign_key="person.id")
-    
+    person_id: int | None = Field(default=None, foreign_key="person.id")

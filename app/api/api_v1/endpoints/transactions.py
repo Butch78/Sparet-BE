@@ -1,13 +1,19 @@
 from typing import Any, List
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
-from app import models, deps
+from app import models
 from sqlmodel import Session
 from app.models.transaction import Transaction, TransactionCreate, TransactionRead
+
+from app.services.plaid import client, models as plaid_models
+from app.utils import deps
 
 
 
 router = APIRouter()
+
+# TODO create plain generator for transactions
+
 
 
 #  Post Transaction
