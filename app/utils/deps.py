@@ -24,7 +24,7 @@ def get_session():
 async def get_plaid_client() -> PlaidClient:
     try:
         client = PlaidClient()
-        
+
         await client.oauthentic_client()
         yield client
     except Exception as e:

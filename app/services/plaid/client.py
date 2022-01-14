@@ -1,16 +1,24 @@
 # Connet to the Plaid API and get the access token using asyncio.
 
+from functools import lru_cache
 from fastapi import Depends
 from app.services.plaid.models import Transaction
 import aiohttp
 
-from app.utils.config import settings
+from app.utils import config
+
+
+@lru_cache()
+def app_setting():
+    return config.Settings()
 
 
 # Plaid Client using the plaid-python package and the Plaid API
 class PlaidClient:
-    def __init__(self):
-        self.base_url = "https://sandbox.plaid.com"
+    def __init__(self, settings: config.Settings = app_setting()):
+        self.base_url = ("https://sandbox.plaid.com",)
+        self.client_id = self.PLAID_CLIENT_ID
+        self.secret = self.PLAID_SECRET
         self.access_token: str = None
         self.public_token: str = None
 
@@ -50,8 +58,8 @@ class PlaidClient:
                 async with session.post(
                     url="https://sandbox.plaid.com/sandbox/public_token/create",
                     json={
-                        "client_id": settings.PLAID_CLIENT_ID,
-                        "secret": settings.PLAID_SECRET,
+                        "client_id": self.PLAID_CLIENT_ID,
+                        "secret": self.PLAID_SECRET,
                         "institution_id": "ins_3",
                         "initial_products": ["auth", "transactions"],
                         "options": {
@@ -80,8 +88,8 @@ class PlaidClient:
                     async with session.post(
                         url=self.base_url + "/item/public_token/exchange",
                         json={
-                            "client_id": settings.PLAID_CLIENT_ID,
-                            "secret": settings.PLAID_SECRET,
+                            "client_id": self.PLAID_CLIENT_ID,
+                            "secret": self.PLAID_SECRET,
                             "public_token": self.public_token,
                         },
                     ) as response:
@@ -105,8 +113,8 @@ class PlaidClient:
                 async with session.post(
                     url=self.base_url + "/transactions/get",
                     json={
-                        "client_id": settings.PLAID_CLIENT_ID,
-                        "secret": settings.PLAID_SECRET,
+                        "client_id": self.PLAID_CLIENT_ID,
+                        "secret": self.PLAID_SECRET,
                         "access_token": self.access_token,
                         "start_date": start_date,
                         "end_date": end_data,
