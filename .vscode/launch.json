@@ -9,8 +9,16 @@
             "type": "python",
             "request": "launch",
             "module": "uvicorn",
+            "env": {
+                // "PLAID_CLIENT_ID": "61d321dadab78b001ae3963f",
+                // "PLAID_SECRET": "fdea3d871ad55927b62836b74a3330"
+                "envFile": "env"
+            },
             "args": [
-                "app.main:app"
+                "app.main:app",
+                "--reload",
+                "--port",
+                "8000"
             ],
             "jinja": true
         }
