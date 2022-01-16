@@ -1,5 +1,6 @@
 from typing import List, TYPE_CHECKING
 from sqlmodel import Field, SQLModel, Relationship
+from pydantic import BaseConfig
 
 # TO enire there are not circular dependencies we use TYPE_CHECKING
 if TYPE_CHECKING:
@@ -13,6 +14,9 @@ class UserBase(SQLModel):
 
     class Config:
         anystr_strip_whitespace = True
+
+    class Config(BaseConfig):
+        orm_mode = True
 
 
 # Inherit from UserBase
@@ -28,3 +32,9 @@ class UserCreate(UserBase):
 
 class UserRead(UserBase):
     pass
+
+
+class UserUpdate(UserBase):
+    name: str | None = Field(None, title="Name", description="The name of the user")
+    age: int | None = Field(None, title="Age", description="The age of the user")
+    email: str | None = Field(None, title="Email", description="The email of the user")
