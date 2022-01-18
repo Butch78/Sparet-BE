@@ -3,7 +3,6 @@ from app.utils.deps import create_db_and_tables
 from app.api.api_v1.api import api_router
 from fastapi.middleware.cors import CORSMiddleware
 from app.utils.config import settings
-from functools import lru_cache
 
 
 
@@ -22,8 +21,12 @@ def get_application():
 
     return _app
 
-
 app = get_application()
+
+
+@app.get("/")
+async def read_main():
+    return {"msg": "Hello World"}
 
 
 @app.on_event("startup")

@@ -1,5 +1,3 @@
-from cgi import test
-from statistics import mode
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
@@ -10,19 +8,8 @@ from app.utils.deps import get_session
 from app.main import app
 from app.models.user import User, UserUpdate
 
-
 from pydantic_factories import ModelFactory
 
-
-class UserFactory(ModelFactory):
-    __model__ = User
-
-
-class UserUpdateFactory(ModelFactory):
-    __model__ = UserUpdate
-
-
-test_user = UserFactory.build()
 
 
 @pytest.fixture(name="session")
@@ -46,6 +33,17 @@ def client_fixture(session: Session):
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
+
+
+class UserFactory(ModelFactory):
+    __model__ = User
+
+
+class UserUpdateFactory(ModelFactory):
+    __model__ = UserUpdate
+
+
+test_user = UserFactory.build()
 
 
 def test_get_all_users_with_no_users(session: Session, client: TestClient):
@@ -133,7 +131,7 @@ def test_update_user(session: Session, client: TestClient):
 
     response = client.patch(
         f"/users/{user.id}",
-        json={"name": "Deadpuddle", "age": "100", "email": "hello@hotmail.com"},
+        json={"name": "Deadpuddle", "age": "100", "email": "hello@hotmail.com"}
     )
     data = response.json()
 
