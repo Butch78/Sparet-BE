@@ -42,19 +42,7 @@ def read_user(
 def update_user(
     *, session: Session = Depends(get_session), id: Any, user: UserUpdate
 ) -> User:
-    # return crud.user.update(db=session, id=id, obj_in=user)
-
-
-    db_user = session.get(User, id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    user_data = user.dict(exclude_unset=True)
-    for key, value in user_data.items():
-        setattr(db_user, key, value)
-    session.add(db_user)
-    session.commit()
-    session.refresh(db_user)
-    return db_user
+    return crud.user.update(db=session, id=id, obj_in=user)
 
 
 # User Delete
