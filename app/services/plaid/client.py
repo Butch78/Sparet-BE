@@ -1,24 +1,20 @@
 # Connet to the Plaid API and get the access token using asyncio.
 
+from cmath import acos
 from functools import lru_cache
 from fastapi import Depends
-from app.services.plaid.models import Transaction
+from app.models.account import Account
 import aiohttp
 
-from app.utils import config
-
-
-@lru_cache()
-def app_setting():
-    return config.Settings()
+from app.utils.config import settings, Settings
 
 
 # Plaid Client using the plaid-python package and the Plaid API
 class PlaidClient:
-    def __init__(self, settings: config.Settings = app_setting()):
-        self.base_url = ("https://sandbox.plaid.com",)
-        self.client_id = self.PLAID_CLIENT_ID
-        self.secret = self.PLAID_SECRET
+    def __init__(self, settings: Settings = settings):
+        self.base_url = settings.PLAID_URL
+        self.PLAID_CLIENT_ID = settings.PLAID_CLIENT_ID
+        self.PLAID_SECRET = settings.PLAID_SECRET
         self.access_token: str = None
         self.public_token: str = None
 
@@ -56,7 +52,7 @@ class PlaidClient:
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                    url="https://sandbox.plaid.com/sandbox/public_token/create",
+                    url=self.base_url + "/sandbox/public_token/create",
                     json={
                         "client_id": self.PLAID_CLIENT_ID,
                         "secret": self.PLAID_SECRET,
@@ -83,27 +79,27 @@ class PlaidClient:
         if self.public_token is None:
             await self.get_public_token()
 
-            try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(
-                        url=self.base_url + "/item/public_token/exchange",
-                        json={
-                            "client_id": self.PLAID_CLIENT_ID,
-                            "secret": self.PLAID_SECRET,
-                            "public_token": self.public_token,
-                        },
-                    ) as response:
-                        response_json = await response.json()
-                        print(response_json)
-                        self.access_token = response_json["access_token"]
-                        return self.access_token
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    url=self.base_url + "/item/public_token/exchange",
+                    json={
+                        "client_id": self.PLAID_CLIENT_ID,
+                        "secret": self.PLAID_SECRET,
+                        "public_token": self.public_token,
+                    },
+                ) as response:
+                    response_json = await response.json()
+                    print(response_json)
+                    self.access_token = response_json["access_token"]
+                    return self.access_token
 
-            except Exception as e:
-                print(e)
+        except Exception as e:
+            print(e)
 
     async def get_transactions(
         self, start_date: str = "2021-01-01", end_data: str = "2021-12-01"
-    ) -> list[Transaction]:
+    ) -> list[Account]:
         # Get the transactions using the Plaid API
 
         if self.access_token is None:
@@ -121,8 +117,32 @@ class PlaidClient:
                     },
                 ) as response:
                     response_json = await response.json()
-                    print(response_json)
-                    return response_json["transactions"]
+                    accounts = []
+                    for item in response_json["accounts"]:
+                        accounts.append(Account(**item))
+                    print(accounts)
+
+        except Exception as e:
+            print(e)
+
+    async def get_accounts(self) -> list[Account]:
+        # Get the accounts using the Plaid API
+
+        if self.access_token is None:
+            await self.access_token()
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    url=self.base_url + "/accounts/balance/get",
+                    json={
+                        "client_id": self.PLAID_CLIENT_ID,
+                        "secret": self.PLAID_SECRET,
+                        "access_token": self.access_token,
+                    },
+                ) as response:
+                    response_json = await response.json()
+                    Account(**response_json)
+                    print(Account)
 
         except Exception as e:
             print(e)

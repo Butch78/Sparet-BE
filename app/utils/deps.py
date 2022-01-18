@@ -1,7 +1,6 @@
 from fastapi import Depends
 from sqlmodel import SQLModel, Session, create_engine
 from app.services.plaid.client import PlaidClient
-from functools import lru_cache
 from app.utils.config import settings
 
 
@@ -24,7 +23,6 @@ def get_session():
 async def get_plaid_client() -> PlaidClient:
     try:
         client = PlaidClient()
-
         await client.oauthentic_client()
         yield client
     except Exception as e:

@@ -3,6 +3,8 @@ from pydantic.fields import Field
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
 from typing import Any, Dict, List, Optional, Union
+from functools import lru_cache
+
 
 
 class Settings(BaseSettings):
@@ -12,6 +14,7 @@ class Settings(BaseSettings):
     # Plaid API Settings
     PLAID_CLIENT_ID: str = Field(..., env="PLAID_CLIENT_ID")
     PLAID_SECRET: str = Field(..., env="PLAID_SECRET")
+    PLAID_URL: str = Field(..., env="PLAID_URL")
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:

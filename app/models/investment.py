@@ -8,4 +8,4 @@ class Investment(SQLModel, table=True):
     description: str = str | None
     amount: float
     date: datetime
-    person_id: int | None = Field(default=None, foreign_key="person.id")
+    person_id: int = Field(default=None, foreign_key="person.id")
