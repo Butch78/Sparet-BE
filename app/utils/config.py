@@ -6,10 +6,11 @@ from typing import Any, Dict, List, Optional, Union
 from functools import lru_cache
 
 
-
 class Settings(BaseSettings):
     PROJECT_NAME: str
     BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = []
+
+    TEST_ACCOUNT_ID: str = "EbLbndnlx4SZpgP3aB49SVWGNgE38qfXvl3LW"
 
     # Plaid API Settings
     PLAID_CLIENT_ID: str = Field(..., env="PLAID_CLIENT_ID")

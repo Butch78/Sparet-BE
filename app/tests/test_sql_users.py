@@ -1,38 +1,12 @@
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel, create_engine
-from sqlmodel.pool import StaticPool
+from sqlmodel import Session
 
-
-from app.utils.deps import get_session
-from app.main import app
 from app.models.user import User, UserUpdate
-
 from pydantic_factories import ModelFactory
 
 
-
-@pytest.fixture(name="session")
-def session_fixture():
-    engine = create_engine(
-        "sqlite://",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
-
-
-@pytest.fixture(name="client")
-def client_fixture(session: Session):
-    def get_session_override():
-        return session
-
-    app.dependency_overrides[get_session] = get_session_override
-    client = TestClient(app)
-    yield client
-    app.dependency_overrides.clear()
+from app.tests.utils.conftest import session_fixture, client_fixture
 
 
 class UserFactory(ModelFactory):
@@ -86,6 +60,20 @@ def test_create_user_invalid(client: TestClient):
     assert response.status_code == 422
 
 
+def test_get_account(session: Session, client: TestClient):
+    test_user = UserFactory.build()
+    response = client.post(f"/users", json=test_user.dict())
+    data = response.json()
+    id = data["id"]
+    response = client.get(f"/users/{id}")
+    data = response.json()
+    assert response.status_code == 200
+    assert data["name"] == test_user.name
+    assert data["age"] == test_user.age
+    assert data["email"] == test_user.email
+    assert data["id"] is not None
+
+
 def test_read_users(session: Session, client: TestClient):
     user_1 = UserFactory.build()
     user_2 = UserFactory.build()
@@ -131,7 +119,7 @@ def test_update_user(session: Session, client: TestClient):
 
     response = client.patch(
         f"/users/{user.id}",
-        json={"name": "Deadpuddle", "age": "100", "email": "hello@hotmail.com"}
+        json={"name": "Deadpuddle", "age": "100", "email": "hello@hotmail.com"},
     )
     data = response.json()
 
