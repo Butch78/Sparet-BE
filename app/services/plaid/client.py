@@ -1,10 +1,15 @@
 # Connet to the Plaid API and get the access token using asyncio.
 
 from cmath import acos
-from functools import lru_cache
 from fastapi import Depends
-from app.models.account import Account
+from app.models.account import Accounts
+from app.models.transaction import Transaction
+from app.models.balance import Balance
+from app.models.item import Item
+from app import crud
+from sqlmodel import Session
 import aiohttp
+import asyncer
 
 from app.utils.config import settings, Settings
 
@@ -98,8 +103,11 @@ class PlaidClient:
             print(e)
 
     async def get_transactions(
-        self, start_date: str = "2021-01-01", end_data: str = "2021-12-01"
-    ) -> list[Account]:
+        self,
+        db: Session,
+        start_date: str = "2021-01-01",
+        end_data: str = "2021-12-01",
+    ) -> Accounts:
         # Get the transactions using the Plaid API
 
         if self.access_token is None:
@@ -117,15 +125,48 @@ class PlaidClient:
                     },
                 ) as response:
                     response_json = await response.json()
-                    accounts = []
+
+                    accounts = Accounts(**response_json)
+
+                    balances = []
+
                     for item in response_json["accounts"]:
-                        accounts.append(Account(**item))
-                    print(accounts)
+                        balances.append(
+                            Balance(**item["balances"], account_id=item["account_id"])
+                        )
+
+                    item_obj = Item(**response_json["item"])
+
+                    try:
+
+                        add_accounts = crud.account.create_multiple(
+                            db=db, obj_in=accounts.accounts
+                        )
+
+                        add_balances = crud.balance.create_multiple(
+                            db=db, obj_in=balances
+                        )
+
+                        add_item = crud.item_account.create(db=db, obj_in=item_obj)
+
+                        # Add each add_balance item to each add_account item
+                        for balance in add_balances:
+                            for account in add_accounts:
+                                if account is not None and balance is not None:
+                                    if account.account_id == balance.account_id:
+                                        account.balances.append(balance)
+
+                        accounts.accounts = add_accounts
+
+                        return accounts
+
+                    except Exception as e:
+                        print(e)
 
         except Exception as e:
             print(e)
 
-    async def get_accounts(self) -> list[Account]:
+    async def get_accounts(self, session: Session) -> Accounts:
         # Get the accounts using the Plaid API
 
         if self.access_token is None:
@@ -141,8 +182,14 @@ class PlaidClient:
                     },
                 ) as response:
                     response_json = await response.json()
-                    Account(**response_json)
-                    print(Account)
+
+                    accounts = Accounts(**response_json)
+                    print(accounts)
+
+                    return accounts
 
         except Exception as e:
             print(e)
+
+
+    

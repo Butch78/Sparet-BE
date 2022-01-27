@@ -10,6 +10,7 @@
 
 
 from app.crud.base import CRUDBase
+from app.crud.crud_account import account
 
 
 from app.models.user import User, UserCreate, UserUpdate
@@ -21,7 +22,8 @@ from app.models.payment_meta import PaymentMeta, PaymentMetaCreate, PaymentMetaU
 
 
 user = CRUDBase[User, UserCreate, UserUpdate](User)
-account = CRUDBase[Account, AccountCreate, AccountUpdate](Account)
-
-# from app.crud.crud_account import account
-
+balance = CRUDBase[Balance, BalanceCreate, BalanceUpdate](Balance)
+transaction = CRUDBase[Transaction, TransactionCreate, TransactionUpdate](Transaction)
+item_account = CRUDBase[Item, ItemCreate, ItemUpdate](Item)
+payment_meta = CRUDBase[PaymentMeta, PaymentMetaCreate, PaymentMetaUpdate](PaymentMeta)
+account = account

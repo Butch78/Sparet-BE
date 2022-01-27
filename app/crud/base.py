@@ -40,7 +40,19 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             print(f"{self.model.__name__} not created")
             print(e)
 
-    #  TODO fix update
+    def create_multiple(
+        self, db: Session, *, obj_in: List[CreateSchemaType]
+    ) -> List[SQLModel]:
+        try:
+            db_models = []
+            for item in obj_in:
+                db_model = self.create(db=db, obj_in=item)
+                db_models.append(db_model)
+            return db_models
+        except Exception as e:
+            print(f"{self.model.__name__} not created")
+            print(e)
+
     def update(
         self, db: Session, *, id: Any, obj_in: UpdateSchemaType
     ) -> Optional[SQLModel]:
@@ -48,8 +60,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             db_model = db.get(self.model, id)
             if not db_model:
                 raise HTTPException(status_code=404, detail="Hero not found")
-            hero_data = obj_in.dict(exclude_unset=True)
-            for key, value in hero_data.items():
+            json_data = obj_in.dict(exclude_unset=True)
+            for key, value in json_data.items():
                 setattr(db_model, key, value)
             db.add(db_model)
             db.commit()
