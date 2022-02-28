@@ -1,4 +1,41 @@
+from enum import Enum
 from pydantic import BaseModel, Field
+from typing import List, Optional
+
+
+class RequestEnum(Enum):
+    GET = "GET"
+    POST = "POST"
+
+
+class RequestBase(BaseModel):
+    client_id: str = Field(..., title="Client Id")
+    secret: str = Field(..., title="Secret")
+    access_token: Optional[str] = Field(..., title="Access Token")
+
+
+class RequestOption(BaseModel):
+    count: int = Field(100, title="Count")
+    offset: int = Field(0, title="Offset")
+    include_original_description: bool = Field(
+        True, title="Include Original Description"
+    )
+
+
+class TransactionRequest(RequestBase):
+    start_date: str = Field(..., title="Start Date")
+    end_date: str = Field(..., title="End Date")
+    options: RequestOption = Field(..., title="Options")
+
+
+class TokenOptions(BaseModel):
+    webhook: str = Field(..., title="Webhook")
+
+
+class TokenRequest(RequestBase):
+    institution_id: str = Field(..., title="Institution Id")
+    initial_products: List[str] = Field(..., title="Initial Products")
+    options: TokenOptions = Field(..., title="Options")
 
 
 class PaymentMeta(BaseModel):

@@ -1,25 +1,26 @@
 from typing import List, TYPE_CHECKING, Optional
+from pytest import Item
 from sqlmodel import Field, SQLModel, Relationship
 
-from app.models.transaction import Transaction
-from app.models.balance import Balance
+from app.models.transaction import Transaction, TransactionCreate
+from app.models.balance import Balance, BalanceCreate
 import uuid
-from app.utils.config import settings, Settings
 from pydantic import ValidationError, validator
 from pydantic.validators import dict_validator
+from app.models.item import Item
 
 
 if TYPE_CHECKING:
     from app.models.transaction import Transaction
-    from app.models.balance import Balance, BalancewithAccount
+    from app.models.balance import Balance
 
 
 class AccountBase(SQLModel):
     mask: Optional[str] = Field(None, title="Mask")
     name: Optional[str] = Field(None, title="Name")
     official_name: Optional[str] = Field(None, title="Official Name")
-    subtype: str = Field(None, title="Subtype")
-    type: str = Field(None, title="Type")
+    subtype: Optional[str] = Field(None, title="Subtype")
+    type: Optional[str] = Field(None, title="Type")
 
     @validator("mask", pre=True)
     def validate_mask(cls, v):
@@ -46,23 +47,31 @@ class AccountBase(SQLModel):
             return "Account"
         return v
 
+    class Config:
+        orm_mode = True
+
 
 class Account(AccountBase, table=True):
     account_id: str = Field(str(uuid.uuid4()), primary_key=True)
     balances: List["Balance"] = Relationship(back_populates="account")
     transactions: List["Transaction"] = Relationship(back_populates="account")
 
+    class Config:
+        orm_mode = True
+
 
 class AccountCreate(AccountBase):
+    mask: str = Field(None, title="Mask")
+    name: str = Field(None, title="Name")
+    official_name: str = Field(None, title="Official Name")
+    subtype: str = Field(None, title="Subtype")
+    type: str = Field(None, title="Type")
+    balances: Optional[List[BalanceCreate]] = Field(None, title="Balances")
+    transactions: Optional[List[TransactionCreate]] = Field(None, title="Transactions")
+
+
+class AccountUpdate(AccountBase):
     pass
-
-
-class AccountUpdate(SQLModel):
-    mask: Optional[str] = None
-    name: Optional[str] = None
-    official_name: Optional[str] = None
-    subtype: Optional[str] = None
-    type: Optional[str] = None
 
 
 class AccountRead(AccountBase):
@@ -70,11 +79,12 @@ class AccountRead(AccountBase):
 
 
 class AccountwithBalance(AccountRead):
-    balances: List[Balance] = []
+    balances: Balance = Field(..., title="Balances")
 
 
 class Accounts(SQLModel):
-    accounts: List[AccountwithBalance] = Field(..., title="Accounts")
+    accounts: List[Account] = Field(..., title="Accounts")
     total_transactions: int = Field(..., title="Total Transactions")
     transactions: Optional[List[Transaction]] = Field(..., title="Transactions")
-    request_id: str = Field(..., title="Request ID")
+    request_id: Optional[str] = Field(..., title="Request ID")
+    item: Optional[Item] = Field(..., title="Item")

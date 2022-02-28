@@ -1,0 +1,18 @@
+{
+    "account_id": "EbLbndnlx4SZpgP3aB49SVWGNgE38qfXvl3LW",
+    "balances": [
+        {
+            "available": 100,
+            "current": 110,
+            "iso_currency_code": "USD",
+            "limit": 0.0,
+            "unofficial_currency_code": ""
+        }
+    ],
+    "transactions": [],
+    "mask": "0000",
+    "name": "Plaid Checking",
+    "official_name": "Plaid Gold Standard 0% Interest Checking",
+    "subtype": "checking",
+    "type": "depository"
+}

@@ -13,7 +13,7 @@ router = APIRouter()
 #  Post account
 @router.post("", response_model=Account)
 def create_account(
-    *, session: Session = Depends(get_session), account: Account
+    *, session: Session = Depends(get_session), account: AccountCreate
 ) -> Account:
     return crud.account.create(db=session, obj_in=account)
 

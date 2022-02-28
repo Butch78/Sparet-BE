@@ -4,10 +4,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-from app.models.account import Account, AccountCreate, AccountUpdate
 
-
-from pydantic_factories import ModelFactory
 
 from app.utils.deps import get_session
 
@@ -35,5 +32,4 @@ def client_fixture(session: Session):
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
-
 

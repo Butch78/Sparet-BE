@@ -28,15 +28,15 @@ class CRUDAccount(CRUDBase[Account, AccountCreate, AccountUpdate]):
             print(f"{self.model.__name__} not created")
             print(e)
 
-    def create(self, db: Session, obj_in: Account) -> Optional[Account]:
+    def create(self, db: Session, obj_in: AccountCreate) -> Optional[Account]:
         try:
-            db_model = self.model.from_orm(obj_in)
+            db_model = self.model.construct(**obj_in.dict())
             db.add(db_model)
             db.commit()
             db.refresh(db_model)
             return db_model
         except Exception as e:
-            print(f"{self.model.__name__} not created")
+            print(f"{self.model.type.__name__} not created")
             print(e)
 
     def get(self, db: Session, id: Any) -> Optional[SQLModel]:
@@ -44,7 +44,6 @@ class CRUDAccount(CRUDBase[Account, AccountCreate, AccountUpdate]):
             return db.query(self.model).filter(self.model.account_id == id).first()
         except Exception as e:
             print(f"{self.model.__name__} with the {id} id not found")
-
 
     def delete(self, db: Session, *, id: Any) -> Optional[SQLModel]:
         try:

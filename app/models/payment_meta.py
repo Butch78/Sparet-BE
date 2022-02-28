@@ -15,6 +15,9 @@ class PaymentMetaBase(SQLModel):
     reason: str | None = Field(..., title="Reason")
     reference_number: str | None = Field(..., title="Reference Number")
 
+    class Config:
+        orm_mode = True
+
 
 class PaymentMeta(PaymentMetaBase, table=True):
     id: int = Field(default=None, primary_key=True)

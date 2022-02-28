@@ -3,26 +3,12 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session
 
 from app.models.user import User, UserUpdate
-from pydantic_factories import ModelFactory
+
+from app.tests.utils import build
 
 
 from app.tests.utils.conftest import session_fixture, client_fixture
 from app.models.account import Account, AccountCreate, AccountUpdate
-
-
-from pydantic_factories import ModelFactory
-
-
-class AccountCreateFactory(ModelFactory):
-    __model__ = AccountCreate
-
-
-class AccountFactory(ModelFactory):
-    __model__ = Account
-    account_id = "EbLbndnlx4SZpgP3aB49SVWGNgE38qfXvl3LW"
-
-
-test_account = AccountCreateFactory.build()
 
 
 def test_get_all_accounts_with_no_accounts(session: Session, client: TestClient):
@@ -33,9 +19,11 @@ def test_get_all_accounts_with_no_accounts(session: Session, client: TestClient)
     assert len(data) == 0
 
 
-def test_create_account(client: TestClient):
+def test_create_account(
+    client: TestClient,
+):
 
-    test_account = AccountFactory.build()
+    test_account = build.account.build_object()
     response = client.post("/accounts", json=test_account.dict())
     data = response.json()
     assert response.status_code == 200
@@ -49,7 +37,7 @@ def test_create_account(client: TestClient):
 
 def test_create_account_endpoint_no_id(client: TestClient):
 
-    test_account = AccountCreateFactory.build()
+    test_account = build.account.build_create_object()
 
     response = client.post("/accounts", json=test_account.dict())
     data = response.json()
@@ -64,7 +52,7 @@ def test_create_account_endpoint_no_id(client: TestClient):
 
 
 def test_get_account(client: TestClient):
-    test_account = AccountCreateFactory.build()
+    test_account = build.account.build_create_object()
     response = client.post("/accounts", json=test_account.dict())
     data = response.json()
     account_id = data["account_id"]
@@ -80,7 +68,7 @@ def test_get_account(client: TestClient):
 
 
 def test_update_account(client: TestClient):
-    test_account = AccountCreateFactory.build()
+    test_account = build.account.build_create_object()
     response = client.post("/accounts", json=test_account.dict())
     data = response.json()
     account_id = data["account_id"]
@@ -100,7 +88,7 @@ def test_update_account(client: TestClient):
 
 def test_delete_account(session: Session, client: TestClient):
 
-    account = AccountCreateFactory.build()
+    account = build.account.build_create_object()
     response = client.post("/accounts", json=account.dict())
     data = response.json()
 

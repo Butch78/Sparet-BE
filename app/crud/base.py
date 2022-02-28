@@ -1,4 +1,3 @@
-from pyexpat import model
 from typing import Any, Generic, List, Optional, TypeVar
 
 

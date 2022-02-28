@@ -22,3 +22,11 @@ class Location(LocationBase, table=True):
         default=None, title="Transaction Id", foreign_key="transaction.transaction_id"
     )
     transaction: Optional["Transaction"] = Relationship(back_populates="location")
+
+
+class LocationCreate(LocationBase):
+    pass
+
+
+class LocationUpdate(LocationBase):
+    pass

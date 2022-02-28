@@ -1,4 +1,4 @@
-import uuid
+
 from sqlmodel import Field, SQLModel, Relationship
 from typing import List, TYPE_CHECKING, Optional
 
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class BalanceBase(SQLModel):
     available: float = Field(default=0.0, title="Available")
     current: float = Field(default=0.0, title="Current")
-    iso_curreny_code: str = Field(..., title="ISO Currency Code")
+    iso_curreny_code: str = Field(default="CHF", title="ISO Currency Code")
     limit: float = Field(0.0, title="Limit")
     unofficial_currency_code: str = Field("", title="Unofficial Currency Code")
 
@@ -48,6 +48,9 @@ class BalanceBase(SQLModel):
             return "CHF"
         return v
 
+    class Config:
+        orm_mode = True
+
 
 # class BalancewithAccount(BalanceBase):
 #     account: Optional[AccountRead] = Field(default=None, title="Account")
@@ -59,6 +62,9 @@ class Balance(BalanceBase, table=True):
         default=None, title="Account Id", foreign_key="account.account_id"
     )
     account: Optional["Account"] = Relationship(back_populates="balances")
+
+    class Config:
+        orm_mode = True
 
 
 class BalanceCreate(BalanceBase):
